@@ -1,0 +1,17 @@
+ # Build dosyaları
+target/
+build/
+
+# IDE klasörleri
+.idea/
+.vscode/
+*.iml
+
+# Çeşitli
+*.log
+.DS_Store
+
+# Ayarlar
+application.properties
+application.yml
+
