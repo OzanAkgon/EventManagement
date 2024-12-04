@@ -14,4 +14,5 @@ public interface EventService {
     public List<Event> getAllEvents();
     public Event getEventById(Long id);
 	public void joinEvent(Long id, String token);
+	public int countParticipantsForEvent(Long eventId);
 }

@@ -66,38 +66,46 @@ public class EventServiceImpl implements EventService {
         return eventRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
     }
+    
+   
 
     @Override
     public void joinEvent(Long eventId, String token) {
         // Token'den kullanıcı adını al
         String username = jwtService.getUsernameByToken(token);
 
-        // Kullanıcıyı bul
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Etkinliği bul
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
 
-        // Kullanıcı zaten etkinliğe katılmış mı kontrol et
         if (user.getEvents().contains(event)) {
             throw new RuntimeException("User already joined the event");
         }
+       
+        if (event.getMaxParticipants() < countParticipantsForEvent(eventId)) {
+            throw new RuntimeException("Event is full");
+        }
 
-        // Etkinlik doluysa hata fırlat
-       // if (event.getMaxParticipants() > event.getParticipants().size() >= event.getMaxParticipants()) {
-          //  throw new RuntimeException("Event is full");
-        //}
-
-        // Ara tabloya kaydı eklemek için ilişkiyi güncelle
         user.getEvents().add(event);
 
-        // User kaydet (ara tabloya kaydı tetikler)
         userRepository.save(user);
     }
+
+	@Override
+	public int countParticipantsForEvent(Long eventId) {
+		return (int) userRepository.findAll().stream()
+                .filter(user -> user.getEvents().stream()
+                        .anyMatch(event -> event.getId().equals(eventId)))
+                .count();
+		
+	}
+
+   
+	}
         
         
-    }
+    
 
 
